@@ -10,10 +10,12 @@ db = SQLAlchemy(app)
 class Util(db.Model):
     FIELD_ID = 'id'
     FIELD_LOGIN = 'login'
+    FIELD_PASS ="password"
     __tablename__ = 'Util'
 
     id = db.Column(db.Integer, primary_key=True)
     login = db.Column(db.String(200), nullable=False)
+    password = db.Column(db.String(200), nullable=False)
 
     util = relationship("Message", back_populates="Util")
 
@@ -26,7 +28,7 @@ class Util(db.Model):
         self.login = "test"
 
     def dumpJson(self):
-        return {"id": self.id, "login": self.login}
+        return {"id": self.id, "login": self.login,"password":self.password}
 
 
 class Conversation(db.Model):

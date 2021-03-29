@@ -15,14 +15,20 @@ class UserDao():
         return list
 
     @staticmethod
-    def postUser(user):
+    def postUser(user, dao):
         print(user[UtilModel.FIELD_LOGIN])
         text = user[UtilModel.FIELD_LOGIN]
         new_util = Util()
         new_util.login = text
-        db.session.add(new_util)
-        db.session.commit()
-        return new_util.dumpJson()
+
+        if not dao.isExistInUser(user) :
+            db.session.add(new_util)
+            db.session.commit()
+            return new_util.dumpJson()
+        else :
+            return "{}"
+
+
 
     @staticmethod
     def updateUser(user):
@@ -40,6 +46,22 @@ class UserDao():
         db.session.query(Util) \
             .filter_by(id=id) \
             .delete()
+
+    #Method utilitaire
+    @staticmethod
+    def getAllUserPy():
+        list = []
+        for util in UtilModel.query.all():
+            list.append(util)
+        return list
+
+    def isExistInUser(self,newUtil):
+        for util in self.getAllUserPy():
+            if newUtil.login == util.login:
+                return True
+            else:
+                return False
+
 
 
 class ConversationDao():
