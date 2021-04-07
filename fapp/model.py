@@ -10,7 +10,7 @@ db = SQLAlchemy(app)
 class Util(db.Model):
     FIELD_ID = 'id'
     FIELD_LOGIN = 'login'
-    FIELD_PASS ="password"
+    FIELD_PASS ='password'
     __tablename__ = 'Util'
 
     id = db.Column(db.Integer, primary_key=True)

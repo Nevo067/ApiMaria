@@ -15,15 +15,36 @@ def index():
 
 @app.route("/User", methods=['GET'])
 def getAllUser():
-    reponse =  flask.jsonify(Dao.UserDao.getAll())
+    reponse = flask.jsonify(Dao.UserDao.getAll())
     reponse.headers.add('Access-Control-Allow-Origin', '*')
+    return reponse
+
+
+@app.route('/User/<login>', methods=['GET'])
+def getOnUserByLogin(login):
+    reponse = flask.jsonify(Dao.UserDao.getOneUserByName(login))
+    return reponse
+
+
+@app.route('/User/IsExist/<login>/<password>', methods=['GET'])
+def IsExistUser(login, password):
+    reponse = flask.jsonify(Dao.UserDao.isExistInUser(login, password))
+    return reponse
+
+
+@app.route('/User/Check/<login>/<password>', methods=['GET'])
+def Check(login, password):
+    reponse = flask.jsonify(Dao.UserDao.checkConnexionUser(login, password))
     return reponse
 
 
 @app.route("/User", methods=['POST'])
 def post_User():
-    DaoUser = UserDao();
-    return flask.jsonify(Dao.UserDao.postUser((request.get_json()), DaoUser))
+    DaoUser = UserDao()
+    print(request.get_json(), flush=True)
+    reponse = flask.jsonify(Dao.UserDao.postUser((request.get_json()), DaoUser))
+    reponse.headers.add('Access-Control-Allow-Origin', '*')
+    return reponse
 
 
 @app.route("/User/Update", methods=['POST'])

@@ -13,15 +13,40 @@ class UserDao():
         for util in UtilModel.query.all():
             list.append(util.dumpJson())
         return list
+    @staticmethod
+    def getOneUserByName(userlogin):
+        user = UtilModel.query.filter_by(login=userlogin).first()
+        print(user,flush=True)
+        if user is not None:
+            return user.dumpJson()
+        else:
+            return False
+    @staticmethod
+    def IsExist(userLogin,userPassword):
+        user = UtilModel.query.filter_by(login=userLogin,password=userPassword).first()
+        if user is not None:
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def checkConnexionUser(userLogin, userPassword):
+        user = UtilModel.query.filter_by(login=userLogin, password=userPassword).first()
+        if user is not None:
+            return user.dumpJson()
+        else:
+            return False
 
     @staticmethod
     def postUser(user, dao):
-        print(user[UtilModel.FIELD_LOGIN])
-        text = user[UtilModel.FIELD_LOGIN]
+        print(user[UtilModel.FIELD_LOGIN], flush=True)
+        login = user[UtilModel.FIELD_LOGIN]
+        password = user[UtilModel.FIELD_PASS]
         new_util = Util()
-        new_util.login = text
+        new_util.login = login
+        new_util.password = password
 
-        if not dao.isExistInUser(user) :
+        if not dao.isExistInUser(new_util) :
             db.session.add(new_util)
             db.session.commit()
             return new_util.dumpJson()
