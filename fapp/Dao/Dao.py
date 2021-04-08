@@ -22,16 +22,22 @@ class UserDao():
         else:
             return False
     @staticmethod
-    def IsExist(userLogin,userPassword):
-        user = UtilModel.query.filter_by(login=userLogin,password=userPassword).first()
+    def IsExist(userJson):
+        login = userJson[UtilModel.FIELD_LOGIN]
+        password = userJson[UtilModel.FIELD_PASS]
+
+        user = UtilModel.query.filter_by(login=login, password=password).first()
         if user is not None:
             return True
         else:
             return False
 
     @staticmethod
-    def checkConnexionUser(userLogin, userPassword):
-        user = UtilModel.query.filter_by(login=userLogin, password=userPassword).first()
+    def checkConnexionUser(userJson):
+        login =userJson[UtilModel.FIELD_LOGIN]
+        password =userJson[UtilModel.FIELD_PASS]
+
+        user = UtilModel.query.filter_by(login=login, password=password).first()
         if user is not None:
             return user.dumpJson()
         else:

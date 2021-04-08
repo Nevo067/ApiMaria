@@ -26,15 +26,15 @@ def getOnUserByLogin(login):
     return reponse
 
 
-@app.route('/User/IsExist/<login>/<password>', methods=['GET'])
-def IsExistUser(login, password):
-    reponse = flask.jsonify(Dao.UserDao.isExistInUser(login, password))
+@app.route('/User/IsExist', methods=['POST'])
+def IsExistUser():
+    reponse = flask.jsonify(Dao.UserDao.IsExist(request.get_json()))
     return reponse
 
 
-@app.route('/User/Check/<login>/<password>', methods=['GET'])
-def Check(login, password):
-    reponse = flask.jsonify(Dao.UserDao.checkConnexionUser(login, password))
+@app.route('/User/Check', methods=['POST'])
+def Check():
+    reponse = flask.jsonify(Dao.UserDao.checkConnexionUser(request.get_json()))
     return reponse
 
 
