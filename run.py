@@ -1,4 +1,6 @@
 from fapp import app
+from flask_socketio import SocketIO
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    socketio = SocketIO(app)
+    socketio.run(app, debug=True)
