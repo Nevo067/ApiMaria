@@ -67,5 +67,23 @@ class Message(db.Model):
                 "id_conversation": self.id_conversation,
                 "id_Util": self.Util}
 
+class Participant(db.Model):
+    __tablename__ = 'Participant'
+
+    FIELD_ID ="idParticipant"
+    FIELD_IDUSER="idUser"
+    FIELD_IDCONVERSATION="idconversation"
+    FIELD_SURNOM="surnom"
+
+    idParticipant = db.Column(db.Integer, primary_key=True)
+    idUser = db.Column(db.Integer, primary_key=True)
+    idConversation =db.Column(db.Integer, primary_key=True)
+    surnom = db.Column(db.String(200), nullable=True)
+
+    def dumpJson(self):
+        return {self.FIELD_ID: self.idParticipant, self.FIELD_IDUSER: self.idUser,
+                self.FIELD_IDCONVERSATION: self.idConversation,
+                self.FIELD_SURNOM: self.surnom}
+
 
 db.create_all()
