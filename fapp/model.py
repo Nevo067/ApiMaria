@@ -17,10 +17,6 @@ class Util(db.Model):
     login = db.Column(db.String(200), nullable=False)
     password = db.Column(db.String(200), nullable=False)
 
-    util = relationship("Message", back_populates="Util")
-
-    Message = relationship("Message", back_populates="Util")
-
     Participant = relationship("Participant", back_populates="Util")
 
     def __init__(self, login):
@@ -42,7 +38,6 @@ class Conversation(db.Model):
     Id = db.Column(db.Integer, primary_key=True)
     nom = db.Column(db.String(200), nullable=True)
 
-    Message = relationship("Message", back_populates="Conversation")
     Participant = relationship("Participant", back_populates="Conversation")
 
     def dumpJson(self):
@@ -54,17 +49,16 @@ class Message(db.Model):
 
     FIELD_ID = "IDMESSAGE"
     FIELD_TEXT = "TEXT"
-    FIELD_IDCONVERSATION = "id_conversation";
-    FIELD_UTIL = "Util"
+    FIELD_IDPARTICIPANT = "idParticipant"
 
     idMessage = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(200), nullable=True)
 
-    id_conversation = db.Column(db.Integer, ForeignKey('Conversation.Id'))
-    Conversation = relationship("Conversation", back_populates="Message")
+    idParticipant = db.Column(db.Integer, ForeignKey("Participant.idParticipant"))
+    Participant = relationship("Participant", back_populates="Message")
 
-    id_Util = db.Column(db.Integer, ForeignKey('Util.id'))
-    Util = relationship("Util", back_populates="Message")
+
+
 
     def dumpJson(self):
         return {"IdMessage": self.idMessage, "text": self.text,
@@ -86,6 +80,8 @@ class Participant(db.Model):
 
     idConversation =db.Column(db.Integer, ForeignKey('Conversation.Id'))
     Conversation = relationship("Conversation", back_populates="Participant")
+
+    Message = relationship("Message", back_populates="Participant")
 
     surnom = db.Column(db.String(200), nullable=True)
 
