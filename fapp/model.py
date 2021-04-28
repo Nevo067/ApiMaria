@@ -21,6 +21,8 @@ class Util(db.Model):
 
     Message = relationship("Message", back_populates="Util")
 
+    Participant = relationship("Participant", back_populates="Util")
+
     def __init__(self, login):
         self.login = login
 
@@ -39,7 +41,9 @@ class Conversation(db.Model):
 
     Id = db.Column(db.Integer, primary_key=True)
     nom = db.Column(db.String(200), nullable=True)
+
     Message = relationship("Message", back_populates="Conversation")
+    Participant = relationship("Participant", back_populates="Conversation")
 
     def dumpJson(self):
         return {"Id": self.id, "nom": self.nom}
@@ -76,8 +80,13 @@ class Participant(db.Model):
     FIELD_SURNOM="surnom"
 
     idParticipant = db.Column(db.Integer, primary_key=True)
-    idUser = db.Column(db.Integer, primary_key=True)
-    idConversation =db.Column(db.Integer, primary_key=True)
+
+    idUser = db.Column(db.Integer, ForeignKey('Util.id'))
+    Util = relationship("Util", back_populates="Participant")
+
+    idConversation =db.Column(db.Integer, ForeignKey('Conversation.Id'))
+    Conversation = relationship("Conversation", back_populates="Participant")
+
     surnom = db.Column(db.String(200), nullable=True)
 
     def dumpJson(self):
