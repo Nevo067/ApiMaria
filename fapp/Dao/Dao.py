@@ -1,9 +1,12 @@
-from fapp.model import Util, Conversation, Message
+from sqlalchemy import or_
+
+from fapp.model import Util, Conversation, Message, Participant
 from fapp.model import db
 
 UtilModel = Util()
 ConversationModel = Conversation()
 MessageModel = Message
+ParticipantModel = Participant()
 
 
 class UserDao():
@@ -13,14 +16,16 @@ class UserDao():
         for util in UtilModel.query.all():
             list.append(util.dumpJson())
         return list
+
     @staticmethod
     def getOneUserByName(userlogin):
         user = UtilModel.query.filter_by(login=userlogin).first()
-        print(user,flush=True)
+        print(user, flush=True)
         if user is not None:
             return user.dumpJson()
         else:
             return False
+
     @staticmethod
     def IsExist(userJson):
         login = userJson[UtilModel.FIELD_LOGIN]
@@ -34,8 +39,8 @@ class UserDao():
 
     @staticmethod
     def checkConnexionUser(userJson):
-        login =userJson[UtilModel.FIELD_LOGIN]
-        password =userJson[UtilModel.FIELD_PASS]
+        login = userJson[UtilModel.FIELD_LOGIN]
+        password = userJson[UtilModel.FIELD_PASS]
 
         user = UtilModel.query.filter_by(login=login, password=password).first()
         if user is not None:
@@ -52,14 +57,12 @@ class UserDao():
         new_util.login = login
         new_util.password = password
 
-        if not dao.isExistInUser(new_util) :
+        if not dao.isExistInUser(new_util):
             db.session.add(new_util)
             db.session.commit()
             return new_util.dumpJson()
-        else :
+        else:
             return "{}"
-
-
 
     @staticmethod
     def updateUser(user):
@@ -78,7 +81,7 @@ class UserDao():
             .filter_by(id=id) \
             .delete()
 
-    #Method utilitaire
+    # Method utilitaire
     @staticmethod
     def getAllUserPy():
         list = []
@@ -86,7 +89,7 @@ class UserDao():
             list.append(util)
         return list
 
-    def isExistInUser(self,newUtil):
+    def isExistInUser(self, newUtil):
         for util in self.getAllUserPy():
             if newUtil.login == util.login:
                 return True
@@ -94,7 +97,7 @@ class UserDao():
                 return False
 
 
-
+# TODO:Test this class
 class ConversationDao():
     @staticmethod
     def getAll():
@@ -102,6 +105,42 @@ class ConversationDao():
         for util in ConversationModel.query.all():
             list.append(util.dumpJson())
         return list
+
+    @staticmethod
+    def getConvById(id):
+        conv = ConversationModel.query.filter_by(Id=id).first()
+        return conv.dumpJson()
+
+    @staticmethod
+    def getConvByUserId(id):
+        list = []
+        for conv in ConversationModel.query.join(Participant) \
+                .join(Util) \
+                .filter_by(id=id).all():
+            list.append(conv.dumpJson())
+        return list
+
+    @staticmethod
+    def getConvByUserAndAIdParticipant(idParticipant, id):
+        list = []
+        for conv in ConversationModel.query \
+                .join(Participant) \
+                .join(Util) \
+                .filter_by(id=id, idParticipant=idParticipant).all():
+            list.append(conv.dumpJson())
+        return list
+
+    @staticmethod
+    def getConvByTwoParticipant(idParticipant1, idParticipant2):
+
+        conv =ConversationModel.query \
+            .join(Participant) \
+            .filter((Participant.idParticipant == idParticipant1) & (Participant.idParticipant == idParticipant2))\
+            .first()
+        return conv
+
+
+
 
     @staticmethod
     def postConversation(conv):
@@ -170,3 +209,17 @@ class MessageDao():
         db.session.query(MessageModel) \
             .filter_by(id=id) \
             .delete()
+
+
+class ParticipantDao():
+    @staticmethod
+    def getAll():
+        list = []
+        for part in Participant.query.all():
+            list.append(part.dumpJson())
+        return list
+
+    @staticmethod
+    def getParticipantByIdUser(id):
+        Part = Participant.query.filter_by(idUser=id).first()
+        return Part.dumpJson()
