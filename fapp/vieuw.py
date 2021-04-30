@@ -5,7 +5,7 @@ from fapp.App import app
 from flask import request
 
 from fapp.Dao import Dao
-from fapp.Dao.Dao import UserDao
+from fapp.Dao.Dao import UserDao, ConversationModel
 
 
 @app.route("/", methods=['GET'])
@@ -55,3 +55,9 @@ def update_User():
 @app.route("/User/Delete", methods=['POST'])
 def delete_User():
     return flask.jsonify(Dao.UserDao.deleteUser(request.get_json()))
+
+@app.route("/Conv/findUser", methods=['POST'])
+def delete_User():
+    jobject=request.get_json()
+    return flask.jsonify(Dao.ConversationDao.getConvByUserId(jobject[ConversationModel.FIELD_ID]))
+

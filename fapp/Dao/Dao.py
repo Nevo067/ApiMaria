@@ -141,7 +141,6 @@ class ConversationDao():
 
 
 
-
     @staticmethod
     def postConversation(conv):
         nom = conv[ConversationModel.FIELD_NOM]
