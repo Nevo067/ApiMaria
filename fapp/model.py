@@ -41,7 +41,7 @@ class Conversation(db.Model):
     Participant = relationship("Participant", back_populates="Conversation")
 
     def dumpJson(self):
-        return {"Id": self.id, "nom": self.nom}
+        return {"Id": self.Id, "nom": self.nom}
 
 
 class Message(db.Model):

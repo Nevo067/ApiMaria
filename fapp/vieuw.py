@@ -56,8 +56,19 @@ def update_User():
 def delete_User():
     return flask.jsonify(Dao.UserDao.deleteUser(request.get_json()))
 
+
 @app.route("/Conv/findUser", methods=['POST'])
-def delete_User():
-    jobject=request.get_json()
+def conv_find_by_User():
+    jobject = request.get_json()
     return flask.jsonify(Dao.ConversationDao.getConvByUserId(jobject[ConversationModel.FIELD_ID]))
 
+
+#Enable to create a conv between two User
+#id1 id2
+@app.route("/Conv/CreateConv", methods=['POST'])
+def conv_Create_Conv():
+    conv = Dao.ConversationDao.postConversation({"nom": "new Conv"})
+    jobject = request.get_json()
+    Dao.PostParticipant(jobject["id1"], conv.Id)
+    Dao.PostParticipant(jobject["id2"], conv.Id)
+    return flask.jsonify(conv.dumpJson())

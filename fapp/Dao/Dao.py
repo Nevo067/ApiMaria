@@ -27,6 +27,15 @@ class UserDao():
             return False
 
     @staticmethod
+    def getOneUserById(id):
+        user = UtilModel.query.filter_by(id=id).first()
+        print(user, flush=True)
+        if user is not None:
+            return user
+        else:
+            return False
+
+    @staticmethod
     def IsExist(userJson):
         login = userJson[UtilModel.FIELD_LOGIN]
         password = userJson[UtilModel.FIELD_PASS]
@@ -116,7 +125,7 @@ class ConversationDao():
         list = []
         for conv in ConversationModel.query.join(Participant) \
                 .join(Util) \
-                .filter_by(id=id).all():
+                .filter(Util.id == id).all():
             list.append(conv.dumpJson())
         return list
 
@@ -133,13 +142,11 @@ class ConversationDao():
     @staticmethod
     def getConvByTwoParticipant(idParticipant1, idParticipant2):
 
-        conv =ConversationModel.query \
+        conv = ConversationModel.query \
             .join(Participant) \
-            .filter((Participant.idParticipant == idParticipant1) & (Participant.idParticipant == idParticipant2))\
+            .filter((Participant.idParticipant == idParticipant1) & (Participant.idParticipant == idParticipant2)) \
             .first()
         return conv
-
-
 
     @staticmethod
     def postConversation(conv):
@@ -148,7 +155,7 @@ class ConversationDao():
         convs.login = nom
         db.session.add(convs)
         db.session.commit()
-        return convs.dumpJson()
+        return convs
 
     @staticmethod
     def updateUser(user):
@@ -222,3 +229,14 @@ class ParticipantDao():
     def getParticipantByIdUser(id):
         Part = Participant.query.filter_by(idUser=id).first()
         return Part.dumpJson()
+
+    @staticmethod
+    def PostParicipant(id,idConv):
+        part = Participant()
+        part.idUser = id
+        part.surnom = UserDao.getOneUserById(id).login
+        part.idConversation = idConv
+
+        db.session.add(part)
+        db.session.commit()
+        return part
