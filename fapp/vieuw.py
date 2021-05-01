@@ -5,7 +5,7 @@ from fapp.App import app
 from flask import request
 
 from fapp.Dao import Dao
-from fapp.Dao.Dao import UserDao, ConversationModel
+from fapp.Dao.Dao import UserDao, ConversationModel, ParticipantDao
 
 
 @app.route("/", methods=['GET'])
@@ -63,12 +63,13 @@ def conv_find_by_User():
     return flask.jsonify(Dao.ConversationDao.getConvByUserId(jobject[ConversationModel.FIELD_ID]))
 
 
-#Enable to create a conv between two User
-#id1 id2
+# TODO:A TEST
+# Enable to create a conv between two User
+# id1 id2
 @app.route("/Conv/CreateConv", methods=['POST'])
 def conv_Create_Conv():
     conv = Dao.ConversationDao.postConversation({"nom": "new Conv"})
     jobject = request.get_json()
-    Dao.PostParticipant(jobject["id1"], conv.Id)
-    Dao.PostParticipant(jobject["id2"], conv.Id)
+    Dao.ParticipantDao.PostParticipant(jobject["id1"], conv.Id)
+    Dao.ParticipantDao.PostParticipant(jobject["id2"], conv.Id)
     return flask.jsonify(conv.dumpJson())

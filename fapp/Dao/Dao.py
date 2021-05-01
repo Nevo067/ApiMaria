@@ -9,7 +9,7 @@ MessageModel = Message
 ParticipantModel = Participant()
 
 
-class UserDao():
+class UserDao:
     @staticmethod
     def getAll():
         list = []
@@ -217,7 +217,7 @@ class MessageDao():
             .delete()
 
 
-class ParticipantDao():
+class ParticipantDao:
     @staticmethod
     def getAll():
         list = []
@@ -231,7 +231,7 @@ class ParticipantDao():
         return Part.dumpJson()
 
     @staticmethod
-    def PostParicipant(id,idConv):
+    def PostParticipant(id,idConv):
         part = Participant()
         part.idUser = id
         part.surnom = UserDao.getOneUserById(id).login
