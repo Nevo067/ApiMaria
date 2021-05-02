@@ -63,13 +63,19 @@ def conv_find_by_User():
     return flask.jsonify(Dao.ConversationDao.getConvByUserId(jobject[ConversationModel.FIELD_ID]))
 
 
-# TODO:A TEST
+
 # Enable to create a conv between two User
 # id1 id2
 @app.route("/Conv/CreateConv", methods=['POST'])
 def conv_Create_Conv():
-    conv = Dao.ConversationDao.postConversation({"nom": "new Conv"})
     jobject = request.get_json()
-    Dao.ParticipantDao.PostParticipant(jobject["id1"], conv.Id)
-    Dao.ParticipantDao.PostParticipant(jobject["id2"], conv.Id)
+    id1 = jobject["id1"]
+    id2 = jobject["id2"]
+
+    if not Dao.ParticipantDao.CheckIfTwoParticipantIsAConv(id1, id2):
+        conv = Dao.ConversationDao.postConversation({"nom": "new Conv"})
+        Dao.ParticipantDao.PostParticipant(id1, conv.Id)
+        Dao.ParticipantDao.PostParticipant(id2, conv.Id)
+    else:
+        conv = Dao.ConversationDao.getConvByTwoUserId(id1,id2)
     return flask.jsonify(conv.dumpJson())

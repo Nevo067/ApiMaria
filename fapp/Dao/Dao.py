@@ -126,8 +126,19 @@ class ConversationDao():
         for conv in ConversationModel.query.join(Participant) \
                 .join(Util) \
                 .filter(Util.id == id).all():
-            list.append(conv.dumpJson())
+            list.append(conv)
         return list
+
+    @staticmethod
+    def getConvByTwoUserId(id, id2):
+
+        conv = ConversationModel.query.join(Participant) \
+                .join(Util) \
+                .filter(or_(Util.id == id , Util.id == id2)).first()
+
+
+        return conv
+
 
     @staticmethod
     def getConvByUserAndAIdParticipant(idParticipant, id):
@@ -230,8 +241,21 @@ class ParticipantDao:
         Part = Participant.query.filter_by(idUser=id).first()
         return Part.dumpJson()
 
+    # Check if two User is also in a conversation
     @staticmethod
-    def PostParticipant(id,idConv):
+    def CheckIfTwoParticipantIsAConv(id1, id2):
+        part1List = Participant.query.filter_by(idUser=id1).all()
+        part2List = Participant.query.filter_by(idUser=id2).all()
+
+        for part1 in part1List:
+            for part2 in part2List:
+                if part1.idConversation == part2.idConversation:
+                    return True
+
+        return False
+
+    @staticmethod
+    def PostParticipant(id, idConv):
         part = Participant()
         part.idUser = id
         part.surnom = UserDao.getOneUserById(id).login
