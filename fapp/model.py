@@ -26,7 +26,7 @@ class Util(db.Model):
         self.login = "test"
 
     def dumpJson(self):
-        return {"id": self.id, "login": self.login,"password":self.password}
+        return {"id": self.id, "login": self.login}
 
 
 class Conversation(db.Model):

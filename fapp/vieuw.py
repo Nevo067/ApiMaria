@@ -5,7 +5,7 @@ from fapp.App import app
 from flask import request
 
 from fapp.Dao import Dao
-from fapp.Dao.Dao import UserDao, ConversationModel, ParticipantDao
+from fapp.Dao.Dao import UserDao, ConversationModel, ParticipantDao, UtilModel
 
 
 @app.route("/", methods=['GET'])
@@ -29,7 +29,10 @@ def getOnUserByLogin(login):
 @app.route('/User/IsExist', methods=['POST'])
 def IsExistUser():
     reponse = flask.jsonify(Dao.UserDao.IsExist(request.get_json()))
-    return reponse
+    if reponse:
+        user=Dao.UserDao.getOneUserByName(request.get_json()[UtilModel.FIELD_LOGIN])
+
+    return user
 
 
 @app.route('/User/Check', methods=['POST'])
