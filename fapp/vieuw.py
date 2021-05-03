@@ -82,3 +82,7 @@ def conv_Create_Conv():
     else:
         conv = Dao.ConversationDao.getConvByTwoUserId(id1,id2)
     return flask.jsonify(conv.dumpJson())
+
+@app.route("/Message/Conv", methods=['POST'])
+def getMessageByConv():
+    return null

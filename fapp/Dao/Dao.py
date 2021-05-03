@@ -193,6 +193,13 @@ class MessageDao():
         for util in MessageModel.query.all():
             list.append(util.dumpJson())
         return list
+    @staticmethod
+    def getAllByConv(id):
+        list = []
+        for util in MessageModel.query.join(Participant).filter(Participant.idConversation == id).all():
+            list.append(util.dumpJson())
+        return list
+
 
     @staticmethod
     def postMessage(conv):
