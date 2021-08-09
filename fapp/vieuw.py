@@ -1,7 +1,10 @@
 import flask
+from flask_socketio import SocketIO, send, emit
 from flask import Flask, render_template, jsonify, json
+from sqlalchemy import null
+
 from fapp import App
-from fapp.App import app
+from fapp.App import app, socketio
 from flask import request
 
 from fapp.Dao import Dao
@@ -30,7 +33,7 @@ def getOnUserByLogin(login):
 def IsExistUser():
     reponse = flask.jsonify(Dao.UserDao.IsExist(request.get_json()))
     if reponse:
-        user=Dao.UserDao.getOneUserByName(request.get_json()[UtilModel.FIELD_LOGIN])
+        user = Dao.UserDao.getOneUserByName(request.get_json()[UtilModel.FIELD_LOGIN])
 
     return user
 
@@ -66,7 +69,6 @@ def conv_find_by_User():
     return flask.jsonify(Dao.ConversationDao.getConvByUserId(jobject[ConversationModel.FIELD_ID]))
 
 
-
 # Enable to create a conv between two User
 # id1 id2
 @app.route("/Conv/CreateConv", methods=['POST'])
@@ -80,9 +82,24 @@ def conv_Create_Conv():
         Dao.ParticipantDao.PostParticipant(id1, conv.Id)
         Dao.ParticipantDao.PostParticipant(id2, conv.Id)
     else:
-        conv = Dao.ConversationDao.getConvByTwoUserId(id1,id2)
+        conv = Dao.ConversationDao.getConvByTwoUserId(id1, id2)
     return flask.jsonify(conv.dumpJson())
 
-@app.route("/Message/Conv", methods=['POST'])
-def getMessageByConv():
-    return null
+
+@socketio.event
+def connect():
+    print('connexion')
+    emit("coucou")
+
+
+@socketio.event
+def textx():
+    print("xxx")
+    send("coucou", broadcast=True)
+
+
+@socketio.on('textx')
+def testConnect(data):
+    print("envoyé")
+    socketio.emit("textx", data)
+    print(data)
