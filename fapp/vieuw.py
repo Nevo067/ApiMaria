@@ -86,6 +86,11 @@ def conv_Create_Conv():
     return flask.jsonify(conv.dumpJson())
 
 
+@app.route("/Message/Conv/<id>", methods=['GET'])
+def getMessageConv(id):
+    return flask.jsonify(Dao.MessageDao.getAllMessageByConv(id))
+
+
 @socketio.event
 def connect():
     print('connexion')

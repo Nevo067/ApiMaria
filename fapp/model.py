@@ -62,8 +62,7 @@ class Message(db.Model):
 
     def dumpJson(self):
         return {"IdMessage": self.idMessage, "text": self.text,
-                "id_conversation": self.id_conversation,
-                "id_Util": self.Util}
+                "idParticipant": self.idParticipant}
 
 class Participant(db.Model):
     __tablename__ = 'Participant'

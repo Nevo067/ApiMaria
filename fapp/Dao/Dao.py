@@ -126,7 +126,11 @@ class ConversationDao():
         for conv in ConversationModel.query.join(Participant) \
                 .join(Util) \
                 .filter(Util.id == id).all():
-            list.append(conv)
+            list.append(conv.dumpJson())
+        if len(list) < 0:
+
+            return ""
+        print(len(list))
         return list
 
     @staticmethod
@@ -196,7 +200,15 @@ class MessageDao():
     @staticmethod
     def getAllByConv(id):
         list = []
-        for util in MessageModel.query.join(Participant).filter(Participant.idConversation == id).all():
+        for util in MessageModel.query.\
+                join(Participant).filter(Participant.idConversation == id).all():
+            list.append(util.dumpJson())
+        return list
+
+    @staticmethod
+    def getAllMessageByConv(id):
+        list = []
+        for util in MessageModel.query.join(Participant).join(Conversation).filter(Conversation.Id == id).all():
             list.append(util.dumpJson())
         return list
 
