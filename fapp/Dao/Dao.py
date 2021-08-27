@@ -215,14 +215,14 @@ class MessageDao():
 
     @staticmethod
     def postMessage(conv):
-        nom = conv[MessageModel.FIELD_TEXT]
-        idConv = conv[MessageModel.FIELD_IDCONVERSATION]
-        util = conv[MessageModel.FIELD_UTIL]
+        text = conv[MessageModel.FIELD_TEXT]
+        idPart = conv[MessageModel.FIELD_IDPARTICIPANT]
+
 
         convs = Message()
-        convs.nom = nom
-        convs.id_conversation = idConv
-        convs.Util = util
+        convs.text = text
+        convs.idParticipant = idPart
+
 
         db.session.add(convs)
         db.session.commit()
@@ -258,6 +258,13 @@ class ParticipantDao:
     @staticmethod
     def getParticipantByIdUser(id):
         Part = Participant.query.filter_by(idUser=id).first()
+        return Part.dumpJson()
+
+    @staticmethod
+    def getParticipantByIdUserAndConv(idUser,IdConv):
+        Part = Participant.query.join(Conversation)\
+            .filter(Participant.idUser == idUser)\
+            .filter(Conversation.Id == IdConv).first()
         return Part.dumpJson()
 
     # Check if two User is also in a conversation
