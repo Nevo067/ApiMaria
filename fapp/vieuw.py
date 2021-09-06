@@ -118,3 +118,8 @@ def testConnect(data):
     print("envoyé")
     socketio.emit("textx", data)
     print(data)
+
+@socketio.on('/message')
+def get_message(jsonmessage):
+    convs = Dao.MessageDao.postMessage(jsonmessage)
+    socketio.emit("/messageC", convs.dumpJson())

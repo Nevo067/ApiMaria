@@ -1,5 +1,5 @@
 from sqlalchemy import or_
-
+import json
 from fapp.model import Util, Conversation, Message, Participant
 from fapp.model import db
 
@@ -128,7 +128,6 @@ class ConversationDao():
                 .filter(Util.id == id).all():
             list.append(conv.dumpJson())
         if len(list) < 0:
-
             return ""
         print(len(list))
         return list
@@ -137,12 +136,10 @@ class ConversationDao():
     def getConvByTwoUserId(id, id2):
 
         conv = ConversationModel.query.join(Participant) \
-                .join(Util) \
-                .filter(or_(Util.id == id , Util.id == id2)).first()
-
+            .join(Util) \
+            .filter(or_(Util.id == id, Util.id == id2)).first()
 
         return conv
-
 
     @staticmethod
     def getConvByUserAndAIdParticipant(idParticipant, id):
@@ -197,10 +194,11 @@ class MessageDao():
         for util in MessageModel.query.all():
             list.append(util.dumpJson())
         return list
+
     @staticmethod
     def getAllByConv(id):
         list = []
-        for util in MessageModel.query.\
+        for util in MessageModel.query. \
                 join(Participant).filter(Participant.idConversation == id).all():
             list.append(util.dumpJson())
         return list
@@ -212,21 +210,20 @@ class MessageDao():
             list.append(util.dumpJson())
         return list
 
-
     @staticmethod
-    def postMessage(conv):
+    def postMessage(convn):
+        conv = json.loads(convn)
         text = conv[MessageModel.FIELD_TEXT]
         idPart = conv[MessageModel.FIELD_IDPARTICIPANT]
-
 
         convs = Message()
         convs.text = text
         convs.idParticipant = idPart
 
-
         db.session.add(convs)
         db.session.commit()
-        return convs.dumpJson()
+        print(convs.dumpJson())
+        return convs
 
     @staticmethod
     def updateUser(user):
@@ -261,9 +258,9 @@ class ParticipantDao:
         return Part.dumpJson()
 
     @staticmethod
-    def getParticipantByIdUserAndConv(idUser,IdConv):
-        Part = Participant.query.join(Conversation)\
-            .filter(Participant.idUser == idUser)\
+    def getParticipantByIdUserAndConv(idUser, IdConv):
+        Part = Participant.query.join(Conversation) \
+            .filter(Participant.idUser == idUser) \
             .filter(Conversation.Id == IdConv).first()
         return Part.dumpJson()
 
