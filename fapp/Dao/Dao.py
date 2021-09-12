@@ -169,14 +169,15 @@ class ConversationDao():
         db.session.commit()
         return convs
 
-    @staticmethod
-    def updateUser(user):
-        id = user[ConversationModel.FIELD_ID]
-        nom = user[ConversationModel.FIELD_NOM]
 
-        db.session.query(Util) \
-            .filter_by(id=id) \
-            .update({ConversationModel: nom})
+
+    @staticmethod
+    def updateConv(conv):
+        id = conv.Id
+        noms = conv.nom
+
+        ConversationModel.query.filter_by(Id=id).update({"nom": noms})
+
 
     @staticmethod
     def deleteUser(user):

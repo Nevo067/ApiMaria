@@ -78,7 +78,14 @@ def conv_Create_Conv():
     id2 = jobject["id2"]
 
     if not Dao.ParticipantDao.CheckIfTwoParticipantIsAConv(id1, id2):
+        #find user
+        user1 = Dao.UserDao.getOneUserById(id1)
+        user2 = Dao.UserDao.getOneUserById(id2)
+        #post participant
         conv = Dao.ConversationDao.postConversation({"nom": "new Conv"})
+        conv.nom = (user1.login + user2.login)
+        #update conv
+        Dao.ConversationDao.updateConv(conv)
         Dao.ParticipantDao.PostParticipant(id1, conv.Id)
         Dao.ParticipantDao.PostParticipant(id2, conv.Id)
     else:
