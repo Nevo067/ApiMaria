@@ -1,5 +1,5 @@
 import flask
-from flask_socketio import SocketIO, send, emit
+from flask_socketio import SocketIO, send, emit, join_room
 from flask import Flask, render_template, jsonify, json
 from sqlalchemy import null
 
@@ -78,13 +78,13 @@ def conv_Create_Conv():
     id2 = jobject["id2"]
 
     if not Dao.ParticipantDao.CheckIfTwoParticipantIsAConv(id1, id2):
-        #find user
+        # find user
         user1 = Dao.UserDao.getOneUserById(id1)
         user2 = Dao.UserDao.getOneUserById(id2)
-        #post participant
+        # post participant
         conv = Dao.ConversationDao.postConversation({"nom": "new Conv"})
         conv.nom = (user1.login + user2.login)
-        #update conv
+        # update conv
         Dao.ConversationDao.updateConv(conv)
         Dao.ParticipantDao.PostParticipant(id1, conv.Id)
         Dao.ParticipantDao.PostParticipant(id2, conv.Id)
@@ -97,10 +97,11 @@ def conv_Create_Conv():
 def getMessageConv(id):
     return flask.jsonify(Dao.MessageDao.getAllMessageByConv(id))
 
+
 @app.route("/Message", methods=['POST'])
 def postMessage():
     jobject = request.get_json()
-    return  flask.jsonify(Dao.MessageDao.postMessage(jobject))
+    return flask.jsonify(Dao.MessageDao.postMessage(jobject))
 
 
 @app.route("/Participant/<conv>/<id>", methods=["GET"])
@@ -126,7 +127,39 @@ def testConnect(data):
     socketio.emit("textx", data)
     print(data)
 
+
 @socketio.on('/message')
 def get_message(jsonmessage):
     convs = Dao.MessageDao.postMessage(jsonmessage)
     socketio.emit("/messageC", convs.dumpJson())
+
+
+@socketio.on('/beginConversation')
+def beginConversation(jsonConversation):
+    jobject = json.jsonify(jsonConversation)
+    id1 = jobject["id1"]
+    id2 = jobject["id2"]
+
+    if not Dao.ParticipantDao.CheckIfTwoParticipantIsAConv(id1, id2):
+        # find user
+        user1 = Dao.UserDao.getOneUserById(id1)
+        user2 = Dao.UserDao.getOneUserById(id2)
+        # post participant
+        conv = Dao.ConversationDao.postConversation({"nom": "new Conv"})
+        conv.nom = (user1.login + user2.login)
+        # update conv
+        Dao.ConversationDao.updateConv(conv)
+        Dao.ParticipantDao.PostParticipant(id1, conv.Id)
+        Dao.ParticipantDao.PostParticipant(id2, conv.Id)
+        # join_room
+        join_room(conv.Id)
+
+    else:
+        conv = Dao.ConversationDao.getConvByTwoUserId(id1, id2)
+    return flask.jsonify(conv.dumpJson())
+
+@socketio.on("/connectRoom")
+def connexionRoom(data):
+    join_room("user"+data)
+
+
