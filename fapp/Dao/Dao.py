@@ -22,9 +22,10 @@ class UserDao:
         user = UtilModel.query.filter_by(login=userlogin).first()
         print(user, flush=True)
         if user is not None:
+            print("is not none")
             return user.dumpJson()
         else:
-            return False
+            return ""
 
     @staticmethod
     def getOneUserById(id):

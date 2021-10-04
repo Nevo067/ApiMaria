@@ -3,7 +3,7 @@ from flask_socketio import SocketIO, send, emit, join_room
 from flask import Flask, render_template, jsonify, json
 from sqlalchemy import null
 
-from fapp import App
+
 from fapp.App import app, socketio
 from flask import request
 
@@ -31,10 +31,11 @@ def getOnUserByLogin(login):
 
 @app.route('/User/IsExist', methods=['POST'])
 def IsExistUser():
+    user = ""
     reponse = flask.jsonify(Dao.UserDao.IsExist(request.get_json()))
     if reponse:
         user = Dao.UserDao.getOneUserByName(request.get_json()[UtilModel.FIELD_LOGIN])
-
+    print(user)
     return user
 
 
@@ -160,6 +161,8 @@ def beginConversation(jsonConversation):
 
 @socketio.on("/connectRoom")
 def connexionRoom(data):
-    join_room("user"+data)
+
+    join_room("user"+str(data))
+    print("coucou"+str(data))
 
 
