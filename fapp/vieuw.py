@@ -131,8 +131,11 @@ def testConnect(data):
 
 @socketio.on('/message')
 def get_message(jsonmessage):
-    convs = Dao.MessageDao.postMessage(jsonmessage)
-    socketio.emit("/messageC", convs.dumpJson())
+    mess = Dao.MessageDao.postMessage(jsonmessage)
+    print(mess)
+    conv = Dao.ConversationDao.getConvByMessage(mess)
+    print("conv"+str(conv.Id))
+    socketio.emit("/messageC", mess.dumpJson(),room=("conv"+str(conv.Id)))
 
 
 @socketio.on('/beginConversation')
@@ -165,4 +168,7 @@ def connexionRoom(data):
     join_room("user"+str(data))
     print("coucou"+str(data))
 
-
+@socketio.on("/joinConv")
+def joinConv(data):
+    print("conv"+str(data))
+    join_room("conv"+str(data))

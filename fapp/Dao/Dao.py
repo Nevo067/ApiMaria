@@ -162,6 +162,11 @@ class ConversationDao():
         return conv
 
     @staticmethod
+    def getConvByMessage(message):
+        return ConversationModel.query.join(Participant). \
+            filter(Participant.idParticipant == message.idParticipant).first()
+
+    @staticmethod
     def postConversation(conv):
         nom = conv[ConversationModel.FIELD_NOM]
         convs = Conversation()
