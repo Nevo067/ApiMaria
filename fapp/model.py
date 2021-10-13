@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
@@ -50,9 +52,11 @@ class Message(db.Model):
     FIELD_ID = "IDMESSAGE"
     FIELD_TEXT = "TEXT"
     FIELD_IDPARTICIPANT = "idParticipant"
+    FIELD_MESSDATE = "MESSDATE"
 
     idMessage = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(200), nullable=True)
+    messDate = db.Column(db.DateTime,nullable=False,default=datetime.utcnow)
 
     idParticipant = db.Column(db.Integer, ForeignKey("Participant.idParticipant"))
     Participant = relationship("Participant", back_populates="Message")

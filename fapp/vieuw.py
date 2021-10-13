@@ -3,7 +3,6 @@ from flask_socketio import SocketIO, send, emit, join_room
 from flask import Flask, render_template, jsonify, json
 from sqlalchemy import null
 
-
 from fapp.App import app, socketio
 from flask import request
 
@@ -134,8 +133,24 @@ def get_message(jsonmessage):
     mess = Dao.MessageDao.postMessage(jsonmessage)
     print(mess)
     conv = Dao.ConversationDao.getConvByMessage(mess)
-    print("conv"+str(conv.Id))
-    socketio.emit("/messageC", mess.dumpJson(),room=("conv"+str(conv.Id)))
+    print("conv" + str(conv.Id))
+    socketio.emit("/messageC", mess.dumpJson(), room=("conv" + str(conv.Id)))
+
+
+@socketio.on('/EditNomConv')
+def EditNomConv(jsonCl):
+    print(jsonCl)
+    dump=json.dumps(jsonCl)
+    print(dump)
+    jsonLoad=json.loads(jsonCl)
+    idConv = jsonLoad['conv']
+    nom = jsonLoad['nom']
+
+    jsonEmit = {"Id": idConv, "nom": nom}
+    print(jsonEmit)
+    Dao.ConversationDao.updateConv(idConv, nom)
+
+    socketio.emit("/EditNomConv", jsonEmit)
 
 
 @socketio.on('/beginConversation')
@@ -162,13 +177,14 @@ def beginConversation(jsonConversation):
         conv = Dao.ConversationDao.getConvByTwoUserId(id1, id2)
     return flask.jsonify(conv.dumpJson())
 
+
 @socketio.on("/connectRoom")
 def connexionRoom(data):
+    join_room("user" + str(data))
+    print("coucou" + str(data))
 
-    join_room("user"+str(data))
-    print("coucou"+str(data))
 
 @socketio.on("/joinConv")
 def joinConv(data):
-    print("conv"+str(data))
-    join_room("conv"+str(data))
+    print("conv" + str(data))
+    join_room("conv" + str(data))

@@ -1,4 +1,4 @@
-from sqlalchemy import or_
+from sqlalchemy import or_, desc, asc
 import json
 from fapp.model import Util, Conversation, Message, Participant
 from fapp.model import db
@@ -184,7 +184,11 @@ class ConversationDao():
 
         ConversationModel.query.filter_by(Id=id).update({"nom": noms})
 
+    @staticmethod
+    def updateConv(id, noms):
 
+        ConversationModel.query.filter_by(Id=id).update({"nom": noms})
+        db.session.commit()
     @staticmethod
     def deleteUser(user):
         id = user[ConversationModel.FIELD_ID]
@@ -213,7 +217,8 @@ class MessageDao():
     @staticmethod
     def getAllMessageByConv(id):
         list = []
-        for util in MessageModel.query.join(Participant).join(Conversation).filter(Conversation.Id == id).all():
+        for util in MessageModel.query.join(Participant).join(Conversation)\
+                .filter(Conversation.Id == id).order_by(asc(MessageModel.messDate)).all():
             list.append(util.dumpJson())
         return list
 
