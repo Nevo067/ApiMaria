@@ -155,10 +155,13 @@ def EditNomConv(jsonCl):
 
 @socketio.on('/beginConversation')
 def beginConversation(jsonConversation):
-    jobject = json.jsonify(jsonConversation)
+    jobject = json.loads(jsonConversation)
+    print(jobject)
     id1 = jobject["id1"]
     id2 = jobject["id2"]
-
+    print(id1)
+    print(id2)
+    print(Dao.ParticipantDao.CheckIfTwoParticipantIsAConv(id1, id2))
     if not Dao.ParticipantDao.CheckIfTwoParticipantIsAConv(id1, id2):
         # find user
         user1 = Dao.UserDao.getOneUserById(id1)
@@ -167,7 +170,7 @@ def beginConversation(jsonConversation):
         conv = Dao.ConversationDao.postConversation({"nom": "new Conv"})
         conv.nom = (user1.login + user2.login)
         # update conv
-        Dao.ConversationDao.updateConv(conv)
+        Dao.ConversationDao.updateConv(conv.Id, conv.nom)
         Dao.ParticipantDao.PostParticipant(id1, conv.Id)
         Dao.ParticipantDao.PostParticipant(id2, conv.Id)
         # join_room
@@ -175,7 +178,7 @@ def beginConversation(jsonConversation):
 
     else:
         conv = Dao.ConversationDao.getConvByTwoUserId(id1, id2)
-    return flask.jsonify(conv.dumpJson())
+    socketio.emit("beginAConversationOn", conv.dumpJson())
 
 
 @socketio.on("/connectRoom")
