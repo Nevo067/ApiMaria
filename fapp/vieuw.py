@@ -140,9 +140,9 @@ def get_message(jsonmessage):
 @socketio.on('/EditNomConv')
 def EditNomConv(jsonCl):
     print(jsonCl)
-    dump=json.dumps(jsonCl)
+    dump = json.dumps(jsonCl)
     print(dump)
-    jsonLoad=json.loads(jsonCl)
+    jsonLoad = json.loads(jsonCl)
     idConv = jsonLoad['conv']
     nom = jsonLoad['nom']
 
@@ -191,3 +191,8 @@ def connexionRoom(data):
 def joinConv(data):
     print("conv" + str(data))
     join_room("conv" + str(data))
+
+
+@app.route("AI/updateUrl", methods=['POST'])
+def update_User():
+    return flask.jsonify(Dao.AiDao.saveUrl(request.get_json()))

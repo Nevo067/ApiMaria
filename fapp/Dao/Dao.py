@@ -2,6 +2,7 @@ from sqlalchemy import or_, desc, asc
 import json
 from fapp.model import Util, Conversation, Message, Participant
 from fapp.model import db
+from fapp.public_variable.Constant import save_file_url
 
 UtilModel = Util()
 ConversationModel = Conversation()
@@ -175,8 +176,6 @@ class ConversationDao():
         db.session.commit()
         return convs
 
-
-
     @staticmethod
     def updateConv(conv):
         id = conv.Id
@@ -189,6 +188,7 @@ class ConversationDao():
 
         ConversationModel.query.filter_by(Id=id).update({"nom": noms})
         db.session.commit()
+
     @staticmethod
     def deleteUser(user):
         id = user[ConversationModel.FIELD_ID]
@@ -217,7 +217,7 @@ class MessageDao():
     @staticmethod
     def getAllMessageByConv(id):
         list = []
-        for util in MessageModel.query.join(Participant).join(Conversation)\
+        for util in MessageModel.query.join(Participant).join(Conversation) \
                 .filter(Conversation.Id == id).order_by(asc(MessageModel.messDate)).all():
             list.append(util.dumpJson())
         return list
@@ -299,3 +299,12 @@ class ParticipantDao:
         db.session.add(part)
         db.session.commit()
         return part
+
+
+class AiDao():
+    @staticmethod
+    def saveUrl(url):
+        file_constant = open(save_file_url, "w")
+        file_constant.write(url)
+        return "ok"
+
