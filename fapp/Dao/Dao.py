@@ -1,8 +1,9 @@
 from sqlalchemy import or_, desc, asc
 import json
+import requests
 from fapp.model import Util, Conversation, Message, Participant
 from fapp.model import db
-from fapp.public_variable.Constant import save_file_url
+from fapp.public_variable.Constant import save_file_url, idUserAi
 
 UtilModel = Util()
 ConversationModel = Conversation()
@@ -107,6 +108,11 @@ class UserDao:
             else:
                 return False
 
+    @staticmethod
+    def get_user_by_id_participant(idPart):
+        user = UtilModel.query.join(Participant).filter_by(IdParticipant=idPart).first()
+        return user
+
 
 # TODO:Test this class
 class ConversationDao():
@@ -133,6 +139,29 @@ class ConversationDao():
             return ""
         print(len(list))
         return list
+
+    @staticmethod
+    def get_conv_by_id_part(id):
+        conv = ConversationModel.query \
+            .join(Participant) \
+            .filter(Participant.idUser == id) \
+            .first()
+        return conv
+
+    @staticmethod
+    def is_part_send_to_ai(idUser):
+        conv = ConversationModel.query \
+            .join(Participant) \
+            .filter(Participant.idUser == idUser) \
+            .first()
+        listPart = ParticipantModel.query \
+            .join(Conversation) \
+            .filter(Conversation.Id == conv.Id).all()
+
+        for part in listPart:
+            if part.idUser == 4:
+                return part
+        return None
 
     @staticmethod
     def getConvByTwoUserId(id, id2):
@@ -222,11 +251,21 @@ class MessageDao():
             list.append(util.dumpJson())
         return list
 
+    # à tester
     @staticmethod
     def postMessage(convn):
         conv = json.loads(convn)
         text = conv[MessageModel.FIELD_TEXT]
         idPart = conv[MessageModel.FIELD_IDPARTICIPANT]
+
+        user = UserDao.get_user_by_id_participant(idPart)
+        part = ConversationDao.is_part_send_to_ai(user.id)
+        if part is not None:
+            text_ai = AiDao.get_ai_text(text)
+            messageAi = Message()
+            messageAi.idParticipant = part.id
+            messageAi.text = text_ai
+            db.session.add(messageAi)
 
         convs = Message()
         convs.text = text
@@ -308,3 +347,9 @@ class AiDao():
         file_constant.write(url)
         return "ok"
 
+    @staticmethod
+    def get_ai_text(text):
+        load = {'message': text}
+        request = requests.post(save_file_url + "/message", load)
+        val = request.json()
+        return val

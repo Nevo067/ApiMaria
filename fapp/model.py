@@ -56,32 +56,30 @@ class Message(db.Model):
 
     idMessage = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(200), nullable=True)
-    messDate = db.Column(db.DateTime,nullable=False,default=datetime.utcnow)
+    messDate = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     idParticipant = db.Column(db.Integer, ForeignKey("Participant.idParticipant"))
     Participant = relationship("Participant", back_populates="Message")
-
-
-
 
     def dumpJson(self):
         return {"IdMessage": self.idMessage, "text": self.text,
                 "idParticipant": self.idParticipant}
 
+
 class Participant(db.Model):
     __tablename__ = 'Participant'
 
-    FIELD_ID ="idParticipant"
-    FIELD_IDUSER="idUser"
-    FIELD_IDCONVERSATION="idconversation"
-    FIELD_SURNOM="surnom"
+    FIELD_ID = "idParticipant"
+    FIELD_IDUSER = "idUser"
+    FIELD_IDCONVERSATION = "idconversation"
+    FIELD_SURNOM = "surnom"
 
     idParticipant = db.Column(db.Integer, primary_key=True)
 
     idUser = db.Column(db.Integer, ForeignKey('Util.id'))
     Util = relationship("Util", back_populates="Participant")
 
-    idConversation =db.Column(db.Integer, ForeignKey('Conversation.Id'))
+    idConversation = db.Column(db.Integer, ForeignKey('Conversation.Id'))
     Conversation = relationship("Conversation", back_populates="Participant")
 
     Message = relationship("Message", back_populates="Participant")
